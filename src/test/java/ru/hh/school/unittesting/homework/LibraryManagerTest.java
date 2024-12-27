@@ -39,12 +39,14 @@ class LibraryManagerTest {
         libraryManager.addBook("book4", 0);
     }
 
+    //Тестируем добавление книги из каталога без экземпляров
     @Test
     void testAddOneBook(){
         libraryManager.addBook("book4", 8);
         assertEquals(libraryManager.getAvailableCopies("book4"), 8);
     }
 
+    //Добавляем имеющиеся книги
     @ParameterizedTest
     @CsvSource({
             "book1, 1, 11",
@@ -57,6 +59,7 @@ class LibraryManagerTest {
         assertEquals(libraryManager.getAvailableCopies(bookId), expectedCount);
     }
 
+    //Добавляем новые книги в каталог
     @ParameterizedTest
     @CsvSource({
         "book5, 1, 1",
@@ -68,6 +71,7 @@ class LibraryManagerTest {
         assertEquals(libraryManager.getAvailableCopies(bookId), expectedCount);
     }
 
+    //Тест на добавление отрицательного количества книг(по хорошему в метод нужно добавить проверку)
     @Test
     void testAddNegativeCountOfBook(){
         //Такого быть не должно, что можно добавить новую книгу с отрицательным количеством экземпляров
@@ -75,6 +79,7 @@ class LibraryManagerTest {
         assertEquals(libraryManager.getAvailableCopies("book5"), -1);
     }
 
+    //Тест на взятие книги неактивным юзером
     @ParameterizedTest
     @CsvSource({
             "book1, user1",
@@ -91,6 +96,7 @@ class LibraryManagerTest {
         verifyNoMoreInteractions(userService);
     }
 
+    //Тест на взятие недоступной книги
     @Test
     void testTakeNotAvailableBook(){
         String userId = "user1";
@@ -103,6 +109,7 @@ class LibraryManagerTest {
         verifyNoMoreInteractions(userService);
     }
 
+    //Тест на взятие книги
     @ParameterizedTest
     @CsvSource({
             "book1, user1, 9, true",
@@ -124,6 +131,7 @@ class LibraryManagerTest {
         verifyNoMoreInteractions(userService);
     }
 
+    //Тест на возвращение книги не из библиотеки
     @Test
     void testReturnBookNotFromLibrary(){
         boolean returnResult = libraryManager.returnBook("book5", "user1");
@@ -131,6 +139,7 @@ class LibraryManagerTest {
         assertFalse(returnResult);
     }
 
+    //Тест на возврашение чужой книги
     @Test
     void testReturnSomeonesBook(){
         String bookId = "book1";
@@ -143,6 +152,7 @@ class LibraryManagerTest {
         assertFalse(returnResult);
     }
 
+    //Тест на возвращение книги
     @ParameterizedTest
     @CsvSource({
             "book1, user1, 0, 9",
@@ -162,6 +172,7 @@ class LibraryManagerTest {
         verify(notificationService).notifyUser(userId, "You have returned the book: " + bookId);
     }
 
+    //Пробуем поймать исключение в методе подсчета штрафа за просрочку
     @Test
     void testCalculateDynamicLateFeeGetException(){
         var exception = assertThrows(
@@ -171,6 +182,7 @@ class LibraryManagerTest {
         assertEquals(exception.getMessage(), "Overdue days cannot be negative.");
     }
 
+    //Проверка корректного рассчета штрафа за просрочку
     @ParameterizedTest
     @CsvSource({
             "1, true, true, 0.6",
